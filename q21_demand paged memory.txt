@@ -1,0 +1,21 @@
+#include<stdio.h>
+#include<conio.h>
+int main()
+{
+	float p;
+	int m,x,y,z,s;
+	printf("enter the time of memory access");
+	scanf("%d",&m);
+	printf("enter the percent of page modified");
+	scanf("%d",&x);
+	printf("enter the time taken to dodify the page");
+	scanf("%d",z);
+	printf("enter the percentage of the page not modified");
+	scanf("%d",y);
+	printf("enter the time");
+	scanf("%d",&s);
+	p=m*100/((x*z)+(y*));
+	printf("the page fault is %f", p);
+	printf("\n\n END");
+	
+	}

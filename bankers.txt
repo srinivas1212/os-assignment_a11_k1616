@@ -1,0 +1,234 @@
+unsigned int available_matrix[3];
+unsigned int max_matrix[3][3];
+unsigned int allocation_matrix[3][3];
+unsigned int need_matrix[3][3];
+unsigned int request_matrix[3][3];
+
+void initialize_available()
+{
+	printf("\n\nEnter the available instances of each resource\n");
+	int i;
+	for(i=0;i<3;i++)
+	{
+		printf("\nResource %c : ",(65+i));
+		scanf("%d",&available_matrix[i]);
+	}	
+	printf("\nAVAILABLE MATRIX INITIALIZED\n");
+	printf("\nResources:A B C\nInstances:");
+	for(i=0;i<3;i++)
+	{
+		printf("	%d",available_matrix[i]);
+	}
+
+}
+
+void initialize_max()
+{
+	printf("\nInitialising MAX MATRIX.\n");
+	int i,j;
+	for(i=0;i<3;i++)
+	{
+		printf("\nFor process P%d:",i);
+		for(j=0;j<3;j++)
+		{
+			printf("\nInstances of Resource %c :",(j+65));		
+			scanf("%d",&max_matrix[i][j]);
+		}
+	}
+	
+	printf("\nMAX MATRIX INITIALIZED\n");
+	
+	printf("\n		A	B	C");
+	for(i=0;i<3;i++)
+	{
+		printf("\n	P%d",i);
+		for(j=0;j<3;j++)
+		{
+			printf("	%d",max_matrix[i][j]);
+		}
+	}
+}
+
+void initialize_allocation()
+{
+	printf("\nInitialising ALLOCATION MATRIX.");
+	int i,j;
+	for(i=0;i<3;i++)
+	{
+		printf("\nFor process P%d:",i);
+		for(j=0;j<3;j++)
+		{
+			printf("\nInstances of Resource %c held:",(j+65));		
+			scanf("%d",&allocation_matrix[i][j]);
+		}
+	}
+	
+	printf("\nALLOCATION MATRIX INITIALIZED\n");
+	
+	printf("\n A B C");
+	for(i=0;i<3;i++)
+	{
+		printf("\nP%d",i);
+		for(j=0;j<3;j++)
+		{
+			printf("%d",allocation_matrix[i][j]);
+		}
+	}
+}
+
+void initialize_need()
+{
+	printf("\nInitialising NEED MATRIX...\n\nCalculated the need matrix by using NEED[i,j] = MAX[i,j] - ALLOCATION[i,j]\n");
+	int i,j;
+	for(i=0;i<3;i++)
+	{
+		for(j=0;j<3;j++)
+		{
+			need_matrix[i][j]=max_matrix[i][j] - allocation_matrix[i][j];
+		}
+	}
+	
+	printf("\nNEED MATRIX INITIALIZED\n");
+	printf("\n		A	B	C");
+	for(i=0;i<3;i++)
+	{
+		printf("\n	P%d",i);
+		for(j=0;j<3;j++)
+		{
+			printf("	%d",need_matrix[i][j]);
+		}
+	}	
+}
+
+void initialize_request()
+{
+	printf("\nInitialising REQUEST MATRIX...\n");
+	int i,j;
+	for(i=0;i<3;i++)
+	{
+		for(j=0;j<3;j++)
+		{
+			request_matrix[i][j]=0;
+		}
+	}
+	
+	printf("\nREQUEST MATRIX INITIALIZED\n");
+	printf("\n		A	B	C");
+	for(i=0;i<3;i++)
+	{
+		printf("\n	P%d",i);
+		for(j=0;j<3;j++)
+		{
+			printf("	%d",request_matrix[i][j]);
+	
+		}
+	}
+}
+		
+int check_safe_state()
+{
+	int work[3],finish[3];
+	int i,j;
+	
+	for(i=0;i<3;i++)
+	{
+		work[i]=available_matrix[i];
+		finish[i]=0;
+	}
+	int count;
+	
+	for(i=0;i<3;i++)
+	{
+		count=0;
+		if(finish[i]==0)
+		{
+			for(j=0;j<3;j++)
+			{
+				if(need_matrix[i][j]<=work[j])
+				{
+					count++;	
+				}
+				else
+				{
+					break;
+				}
+			}
+			if(count==3)
+			{
+				work[j]=work[j]+allocation_matrix[i][j];
+				finish[i]=1;
+			}
+		}
+	}
+	for(i=0;i<3;i++)
+	{
+		if(finish[i]==0)
+		{
+			printf("\nSystem is not in safe state.");
+			return(1);
+		}
+	}
+	printf("\nSystem is in safe state.");
+	return(0);
+}
+
+void resource_request_algo(int i)
+{
+	printf("\n\n* A REQUEST HAS BEEN INITALIZED:\nEnter the instance of each resource that P%d is requesting: ",i);
+	int j,k;
+	for(j=0;j<3;j++)
+	{
+		printf("\nFor resource %c :",j+65);
+		scanf("%d",&request_matrix[i][j]);
+		k=request_matrix[i][j];
+		
+		if(request_matrix[i][j]>need_matrix[i][j])
+		{
+			printf("\nERROR: Process has exceeded its maximum claim for instances. Request cannot be granted.");
+			return;
+		}
+		if(request_matrix[i][j]>available_matrix[j])
+		{
+			printf("\nResources are not yet available , You have to wait for request grant.");
+		}
+		else
+		{
+			available_matrix[j] = available_matrix[j] - request_matrix[i][j];
+			allocation_matrix[i][j] = allocation_matrix[i][j] + request_matrix[i][j];  
+			need_matrix[i][j] = need_matrix[i][j] - request_matrix[i][j];
+		}
+	}
+	int c=check_safe_state();
+	if(c==0)
+	{
+		printf("\nProcess P%d is granted the Requested instances ",i);
+		return;
+	}
+	else
+	{
+		printf("\nProcess P%d cannot be granted the requested instances because of unsafe state,\nProcess has to wait for the safe environment.",i);
+		need_matrix[i][j] = [i][j] + request_matrix[i][j];
+		allocation_matrix[i][j] = alloneed_matrixcation_matrix[i][j] - request_matrix[i][j];  
+		available_matrix[j] = available_matrix[j] + request_matrix[i][j];
+	}
+}
+
+int main()
+{
+	initialize_available();
+	initialize_max();
+	initialize_allocation();
+	initialize_need();
+	initialize_request();
+	
+	check_safe_state();
+	
+	int p;
+	
+	p=0;						
+	resource_request_algo(p);
+	p=1	;						
+	resource_request_algo(p);	
+	
+	return(0);
+}
